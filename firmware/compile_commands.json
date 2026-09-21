@@ -1,0 +1,158 @@
+[
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/misc.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/misc.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/misc.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/misc.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-as -mthumb -mcpu=cortex-m3 -o .pio/build/genericSTM32F103VC/lib715/spl/startup_stm32f10x_hd.o lib/spl/src/startup_stm32f10x_hd.s",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/startup_stm32f10x_hd.s",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/startup_stm32f10x_hd.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_adc.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_adc.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_adc.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_adc.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_bkp.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_bkp.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_bkp.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_bkp.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_can.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_can.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_can.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_can.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_cec.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_cec.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_cec.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_cec.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_crc.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_crc.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_crc.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_crc.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_dac.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_dac.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_dac.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_dac.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_dbgmcu.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_dbgmcu.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_dbgmcu.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_dbgmcu.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_dma.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_dma.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_dma.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_dma.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_exti.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_exti.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_exti.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_exti.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_flash.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_flash.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_flash.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_flash.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_fsmc.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_fsmc.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_fsmc.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_fsmc.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_gpio.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_gpio.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_gpio.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_gpio.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_i2c.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_i2c.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_i2c.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_i2c.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_iwdg.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_iwdg.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_iwdg.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_iwdg.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_pwr.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_pwr.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_pwr.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_pwr.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_rcc.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_rcc.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_rcc.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_rcc.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_rtc.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_rtc.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_rtc.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_rtc.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_sdio.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_sdio.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_sdio.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_sdio.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_spi.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_spi.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_spi.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_spi.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_tim.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_tim.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_tim.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_tim.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_usart.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_usart.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_usart.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_usart.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_wwdg.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/stm32f10x_wwdg.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/stm32f10x_wwdg.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/stm32f10x_wwdg.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/lib715/spl/system_stm32f10x.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Ilib/spl/include -Ilib/spl/src lib/spl/src/system_stm32f10x.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "lib/spl/src/system_stm32f10x.c",
+        "output": ".pio/build/genericSTM32F103VC/lib715/spl/system_stm32f10x.o"
+    },
+    {
+        "command": "/home/haha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc -o .pio/build/genericSTM32F103VC/src/main.o -c -Os -ffunction-sections -fdata-sections -Wall -mthumb -mcpu=cortex-m3 -DF_CPU=72000000L -DPLATFORMIO=60119 -DSTM32F10X_HD -DSTM32F1 -DUSE_STDPERIPH_DRIVER -Iinclude -Isrc -Ilib/spl/include -Ilib/spl/src src/main.c",
+        "directory": "/home/haha/Documents/Mobile-Robot/firmware",
+        "file": "src/main.c",
+        "output": ".pio/build/genericSTM32F103VC/src/main.o"
+    }
+]
