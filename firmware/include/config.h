@@ -1,38 +1,39 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "stm32f10x.h"
+/* 实测轮径65毫米，编码器只统计第一路上升沿。 */
+#define WHEEL_CIRCUMFERENCE_UM 204204L
+#define LEFT_COUNTS_10_REVS 4926L
+#define RIGHT_COUNTS_10_REVS 4910L
+#define LEFT_ENCODER_SIGN 1
+#define RIGHT_ENCODER_SIGN (-1)
 
-/* ============================================================
- * 本文件集中存放"会变的东西":引脚、频率、参数。
- * 换引脚 / 换板子时只改这里,其他 .c 文件不用动。
- * ============================================================ */
+#define SPEED_SAMPLE_MS 20u
+/* 物理测量轮距保留；正逆解及里程计统一使用有效轮距。 */
+#define PHYSICAL_WHEEL_TRACK_MM 180L
+#define WHEEL_TRACK_MM 152L
+#define MAX_WHEEL_SPEED_MM_S 200L
+#define MAX_LINEAR_SPEED_MM_S 200L
+#define MAX_ANGULAR_SPEED_MRAD_S 2000L
+#define WHEEL_ACCEL_MM_S2 200L
+#define REVERSE_SAFE_SPEED_MM_S 50L
+#define COMMAND_TIMEOUT_MS 1000u
 
-/* ---------- 系统时基 ---------- */
-#define TICK_FREQ_HZ    1000u               /* SysTick 中断频率,1000Hz 即 1ms 一跳 */
+/* 参数以千分之一表示；积分增益按秒定义，20毫秒步长等于原来的20。 */
+#define PWM_MAX 500
+#define PID_KP_MILLI 500
+#define PID_KI_MILLI 1000
+#define PID_KD_MILLI 0
+#define PID_INTEGRAL_LIMIT_MILLI 200000L
+#define PWM_FEEDFORWARD 300
 
-/* ---------- 板载 LED(PD7,已焊在板子上,无需外接电阻) ---------- */
-#define LED_PORT        GPIOD
-#define LED_PIN         GPIO_Pin_7
-#define LED_CLK         RCC_APB2Periph_GPIOD
+/* 调试串口保持USART1、PA9/PA10、115200。 */
+#define UART_USART USART1
+#define UART_USART_CLK RCC_APB2Periph_USART1
+#define UART_PORT GPIOA
+#define UART_GPIO_CLK RCC_APB2Periph_GPIOA
+#define UART_TX_PIN GPIO_Pin_9
+#define UART_RX_PIN GPIO_Pin_10
+#define UART_BAUDRATE 115200u
 
-/* ---------- 电机 PWM(TIM3 完全重映射: CH1=PC6, CH2=PC7) ----------
- * PWM 频率 = 72MHz / 72 / 1000 = 1kHz,占空比范围 0~999 */
-#define MOTOR_PWM_TIM           TIM3
-#define MOTOR_PWM_TIM_CLK       RCC_APB1Periph_TIM3
-#define MOTOR_PWM_PORT          GPIOC
-#define MOTOR_PWM_GPIO_CLK      RCC_APB2Periph_GPIOC
-#define MOTOR_PWM_REMAP         GPIO_FullRemap_TIM3     /* 重映射后 CH1/CH2 落在 PC6/PC7 */
-#define MOTOR_PWM_PERIOD        1000u                   /* 自动重装载值,也是占空比上限 */
-#define MOTOR_DUTY_MAX          700u                    /* 软件限幅:第一次测试别让电机全速 */
-
-/* ---------- 调试串口(USART1 默认引脚: PA9=TXD, PA10=RXD) ---------- */
-#define UART_USART      USART1
-#define UART_USART_CLK  RCC_APB2Periph_USART1     /* USART1 挂在 APB2 */
-#define UART_PORT       GPIOA
-#define UART_GPIO_CLK   RCC_APB2Periph_GPIOA
-#define UART_TX_PIN     GPIO_Pin_9
-#define UART_RX_PIN     GPIO_Pin_10
-#define UART_BAUDRATE   115200u
-
-#endif /* CONFIG_H */
+#endif
