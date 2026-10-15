@@ -31,10 +31,12 @@ int main(void)
     control_init();
     {
         int length = snprintf(report, sizeof(report),
-            "READY: auto in 2s: forward 1m, left 360deg, left 90deg, stop once\r\n"
+            "READY: auto in 2s: straight %ldmm, turn 90L, cw %lddeg arc r=%ldmm, turn, return\r\n"
             "stop/valid vel v w (mm/s,mrad/s)/wheel L R (mm/s) cancels auto\r\n"
             "effective_track=%ldmm physical_track=%ldmm timeout=%ums accel=%ld reverse_gate=%ld\r\n"
             "counts/10rev L=%ld R=%ld\r\n",
+            (long)AUTO_STRAIGHT_MM, (long)(AUTO_ARC_SWEEP_MDEG / 1000L),
+            (long)AUTO_RADIUS_MM,
             (long)WHEEL_TRACK_MM, (long)PHYSICAL_WHEEL_TRACK_MM, COMMAND_TIMEOUT_MS,
             (long)WHEEL_ACCEL_MM_S2, (long)REVERSE_SAFE_SPEED_MM_S,
             (long)LEFT_COUNTS_10_REVS, (long)RIGHT_COUNTS_10_REVS);
@@ -52,11 +54,12 @@ int main(void)
             int length;
             control_snapshot(&snapshot);
             length = snprintf(report, sizeof(report),
-                "%s t=%lu auto=%s rel_mm=%+ld rel_mrad=%+ld targetL_mm_s=%+ld targetR_mm_s=%+ld actualL_mm_s=%+ld actualR_mm_s=%+ld "
+                "%s t=%lu auto=%s rel_mm=%+ld rel_mrad=%+ld "
+                "targetL_mm_s=%+ld targetR_mm_s=%+ld actualL_mm_s=%+ld actualR_mm_s=%+ld "
                 "v_mm_s=%+ld w_mrad_s=%+ld x_mm=%+ld y_mm=%+ld yaw_mrad=%+ld pwmL=%+d pwmR=%+d\r\n",
                 state_name(snapshot.state), (unsigned long)snapshot.tick,
-                test_sequence_stage_name(snapshot.test_stage),
-                (long)snapshot.test_distance_mm, fixed_milli(snapshot.test_angle_rad),
+                auto_sequence_stage_name(snapshot.seq.stage),
+                (long)snapshot.seq.rel_mm, (long)snapshot.seq.rel_mrad,
                 (long)snapshot.target_left, (long)snapshot.target_right,
                 (long)motion_pulses_to_mm(snapshot.speed_left, LEFT_COUNTS_10_REVS),
                 (long)motion_pulses_to_mm(snapshot.speed_right, RIGHT_COUNTS_10_REVS),

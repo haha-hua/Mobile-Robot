@@ -2,7 +2,7 @@
 #define CONTROL_H
 #include "motion.h"
 #include "odometry.h"
-#include "test_sequence.h"
+#include "auto_sequence.h"
 typedef struct {
     uint32_t tick; /* Timestamp of this complete 20ms control sample. */
     motion_state_t state;
@@ -10,8 +10,7 @@ typedef struct {
     int32_t target_left, target_right; /* 坡度后的轮目标，mm/s。 */
     int16_t pwm_left, pwm_right;
     odometry_t odom; /* m, rad, m/s, rad/s */
-    test_stage_t test_stage;
-    float test_distance_mm, test_angle_rad;
+    auto_sequence_t seq;
 } control_snapshot_t;
 void control_init(void);
 /* 单位mm/s和mrad/s；成功返回1，越界返回0且不刷新超时。 */

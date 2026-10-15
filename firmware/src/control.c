@@ -25,7 +25,7 @@ static volatile uint32_t ms_tick;
 static volatile control_snapshot_t status;
 static motion_t motion;
 static odometry_t odom;
-static test_sequence_t test;
+static auto_sequence_t seq;
 static int32_t last_left, last_right;
 static uint8_t elapsed;
 
@@ -36,7 +36,7 @@ void control_init(void)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
     motion_init(&motion);
-    test_sequence_init(&test, 0u);
+    auto_sequence_init(&seq, 0u);
     odometry_init(&odom);
     speed_control_init();
     motor_stop();
@@ -67,7 +67,7 @@ uint8_t control_set_velocity(int32_t v, int32_t w)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
     accepted = motion_set_velocity(&motion, v, w, ms_tick);
-    if (accepted) test_sequence_cancel(&test);
+    if (accepted) auto_sequence_cancel(&seq);
     __set_PRIMASK(primask);
     return accepted;
 }
@@ -78,7 +78,7 @@ uint8_t control_set_wheel_speeds(int32_t left, int32_t right)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
     accepted = motion_set_wheel_speeds(&motion, left, right, ms_tick);
-    if (accepted) test_sequence_cancel(&test);
+    if (accepted) auto_sequence_cancel(&seq);
     __set_PRIMASK(primask);
     return accepted;
 }
@@ -87,7 +87,7 @@ void control_stop(void)
 {
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
-    test_sequence_cancel(&test);
+    auto_sequence_cancel(&seq);
     motion_stop(&motion);
     speed_control_reset();
     motor_stop();
@@ -160,7 +160,8 @@ void TIM2_IRQHandler(void)
             last_right = right;
             sample.speed_left = delta_left * (int32_t)(1000u / SPEED_SAMPLE_MS);
             sample.speed_right = delta_right * (int32_t)(1000u / SPEED_SAMPLE_MS);
-            test_sequence_step(&test, &motion, ms_tick, delta_left, delta_right,
+            /* 分段序列先给出车体速度指令，再由坡道和PI执行。 */
+            auto_sequence_step(&seq, &motion, ms_tick, delta_left, delta_right,
                                sample.speed_left, sample.speed_right);
             motion_step(&motion, ms_tick, sample.speed_left, sample.speed_right);
             if (motion.state != MOTION_RUN) speed_control_reset();
@@ -179,9 +180,7 @@ void TIM2_IRQHandler(void)
             sample.pwm_left = pwm_left;
             sample.pwm_right = pwm_right;
             sample.odom = odom;
-            sample.test_stage = test.stage;
-            sample.test_distance_mm = test_sequence_distance_mm(&test);
-            sample.test_angle_rad = test_sequence_angle_rad(&test);
+            sample.seq = seq;
             status = sample;
         }
     }

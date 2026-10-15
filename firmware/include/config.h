@@ -19,6 +19,24 @@
 #define REVERSE_SAFE_SPEED_MM_S 50L
 #define COMMAND_TIMEOUT_MS 1000u
 
+/* 实验二分段流程：直线->停->原地左转90度->顺时针整圈圆弧->原地左转90度->返回。
+ * 出发0.5m到圆周最左点，圆心(0.7,0)，半径0.2m；整圈后回到起点，再对准原点返回。 */
+#define AUTO_BOOT_MS 2000u
+#define AUTO_STAGE_TIMEOUT_MS 60000u
+#define AUTO_TOTAL_TIMEOUT_MS 180000u
+#define AUTO_STABLE_MS 300u
+#define AUTO_SETTLE_MS 800u
+#define AUTO_STRAIGHT_MM 500L
+#define AUTO_RADIUS_MM 200L
+#define AUTO_ARC_SWEEP_MDEG 360000L
+#define AUTO_ARC_SPEED_MM_S 120L
+#define AUTO_DRIVE_MAX_MM_S 180L
+#define AUTO_DRIVE_MIN_MM_S 15L
+#define AUTO_TURN_MAX_MM_S 90L
+#define AUTO_TURN_MIN_MM_S 15L
+#define AUTO_STOP_SPEED_MM_S 10L
+#define AUTO_END_MM 2L
+
 /* 参数以千分之一表示；积分增益按秒定义，20毫秒步长等于原来的20。 */
 #define PWM_MAX 500
 #define PID_KP_MILLI 500
