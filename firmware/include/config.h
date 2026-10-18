@@ -9,6 +9,30 @@
 #define RIGHT_ENCODER_SIGN (-1)
 
 #define SPEED_SAMPLE_MS 20u
+/* 正前方单个三针红外模块，OUT必须为3.3V兼容电平。PA1输入上拉；
+ * PA1默认复用为TIM2_CH2，但TIM2仅作时基无输出，不冲突。 */
+#define IR_PORT GPIOA
+#define IR_GPIO_CLK RCC_APB2Periph_GPIOA
+#define IR_PIN GPIO_Pin_1
+#ifndef IR_ACTIVE_LEVEL
+#define IR_ACTIVE_LEVEL 0u
+#endif
+/* 静态测试开关：置0禁用电机输出并拒绝运动命令，仅保留红外采样；
+ * 调完电位器后改回1恢复避障和实验二。 */
+#ifndef MOTION_OUTPUT_ENABLE
+#define MOTION_OUTPUT_ENABLE 1
+#endif
+#define IR_CLEAR_SAMPLES 3u
+#define AVOID_FORWARD_MM_S 80L
+#define AVOID_TURN_MRAD_S 600L
+#define AVOID_STOP_SPEED_MM_S 10L
+#define AVOID_STABLE_MS 300u
+#define AVOID_TURN_MIN_MRAD 1571L
+#define AVOID_TURN_CLEAR_MS 300u
+#define AVOID_TURN_TIMEOUT_MS 8000u
+/* avoid任务总里程：平均轮程达到该值后停车完成。 */
+#define AVOID_TOTAL_MM 5000L
+
 /* 物理测量轮距保留；正逆解及里程计统一使用有效轮距。 */
 #define PHYSICAL_WHEEL_TRACK_MM 180L
 #define WHEEL_TRACK_MM 152L
