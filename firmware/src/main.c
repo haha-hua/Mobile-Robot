@@ -12,22 +12,11 @@ static const char *state_name(motion_state_t state)
     return names[state];
 }
 
-static const char *mode_name(control_mode_t mode)
-{
-    static const char *names[] = {"sensor", "manual", "avoid", "exp2"};
-    return names[mode];
-}
-
-static long fixed_milli(float value)
-{
-    return (long)(value * 1000.0f + (value < 0.0f ? -0.5f : 0.5f));
-}
-
 int main(void)
 {
     uint32_t report_start = 0u;
     uint8_t auto_start_pending = MOTION_OUTPUT_ENABLE;
-    char report[384];
+    char report[512];
     char line[UART_LINE_CAPACITY];
     const char *reply = 0;
     control_snapshot_t snapshot;
@@ -38,25 +27,8 @@ int main(void)
     control_init();
     {
         int length = snprintf(report, sizeof(report),
-            "READY PA1 active %s (3.3V OUT)\r\n"
-#if MOTION_OUTPUT_ENABLE
-            "AUTO: avoid starts in %ums; stop cancels\r\n"
-#else
-            "STATIC TEST: motors disabled\r\n"
-#endif
-            "avoid / sensor / experiment2 / stop / vel v w / wheel L R"
-#if !MOTION_OUTPUT_ENABLE
-            " (motion commands rejected in static test)"
-#endif
-            "\r\n"
-            "units: mm/s,mrad/s; log T/A=wheel mm/s O=x,y,yaw(mm,mrad)\r\n"
-            "avoid: forward %ldmm total, stop/turn on obstacle, done stops\r\n"
-            "track=%ld timeout=%ums; experiment2 waits %ums\r\n",
-            IR_ACTIVE_LEVEL == 0u ? "low" : "high",
-            (unsigned)AUTO_BOOT_MS,
-            (long)AVOID_TOTAL_MM,
-            (long)WHEEL_TRACK_MM, COMMAND_TIMEOUT_MS,
-            (unsigned)AUTO_BOOT_MS);
+            "READY UART=115200 8N1; LIGHT AO=PA4 DO=PD11; "
+            "commands: stop / vel v w / wheel L R\r\n");
         if (length > 0 && length < (int)sizeof(report)) uart_try_write(report, (uint16_t)length);
     }
 
@@ -72,31 +44,28 @@ int main(void)
                 reply = accepted ? "OK\r\n" : "ERR syntax/range\r\n";
             }
         }
-        if (auto_start_pending && control_tick() >= AUTO_BOOT_MS) {
+        if (auto_start_pending) {
             auto_start_pending = 0u;
-            control_start_avoid();
+            control_start_light_return();
         }
         if (!reply && (uint32_t)(control_tick() - report_start) >= 200u) {
             int length;
             control_snapshot(&snapshot);
             length = snprintf(report, sizeof(report),
-                "t=%lu m=%s s=%s ir=%u obs=%u av=%s run=%ld seq=%s rel=%ld,%ld "
-                "T=%ld,%ld A=%ld,%ld v=%ld w=%ld O=%ld,%ld,%ld P=%d,%d\r\n",
-                (unsigned long)snapshot.tick, mode_name(snapshot.mode),
-                state_name(snapshot.state), (unsigned)snapshot.ir_raw,
-                (unsigned)snapshot.ir_blocked, obstacle_stage_name(snapshot.avoid_stage),
-                (long)snapshot.avoid_run_mm,
-                auto_sequence_stage_name(snapshot.seq.stage),
-                (long)snapshot.seq.rel_mm, (long)snapshot.seq.rel_mrad,
+                "t=%lu s=%s T=%ld,%ld A=%ld,%ld P=%d,%d "
+                "light_adc=%u light_mv=%u light_do=%u light_dark=%u "
+                "lr=%s base=%u stable=%u trig=%u\r\n",
+                (unsigned long)snapshot.tick, state_name(snapshot.state),
                 (long)snapshot.target_left, (long)snapshot.target_right,
                 (long)motion_pulses_to_mm(snapshot.speed_left, LEFT_COUNTS_10_REVS),
                 (long)motion_pulses_to_mm(snapshot.speed_right, RIGHT_COUNTS_10_REVS),
-                fixed_milli(snapshot.odom.linear_m_s),
-                fixed_milli(snapshot.odom.angular_rad_s),
-                fixed_milli(snapshot.odom.x_m),
-                fixed_milli(snapshot.odom.y_m),
-                fixed_milli(snapshot.odom.yaw_rad),
-                (int)snapshot.pwm_left, (int)snapshot.pwm_right);
+                (int)snapshot.pwm_left, (int)snapshot.pwm_right,
+                (unsigned)snapshot.light_adc, (unsigned)snapshot.light_mv,
+                (unsigned)snapshot.light_do, (unsigned)snapshot.light_dark,
+                light_return_stage_name(snapshot.light_return.stage),
+                (unsigned)snapshot.light_return.baseline_mv,
+                (unsigned)snapshot.light_return.stable_mv,
+                (unsigned)snapshot.light_return.triggered);
             if (length > 0 && length < (int)sizeof(report)) uart_try_write(report, (uint16_t)length);
             report_start = snapshot.tick;
         }

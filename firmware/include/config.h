@@ -17,14 +17,18 @@
 #ifndef IR_ACTIVE_LEVEL
 #define IR_ACTIVE_LEVEL 0u
 #endif
-/* 静态测试开关：置0禁用电机输出并拒绝运动命令，仅保留红外采样；
- * 调完电位器后改回1恢复避障和实验二。 */
+/* 静态测试开关：置0禁用电机输出并拒绝运动命令，仅采样传感器；
+ * 置1启用自动光电压触发返航，也可通过串口选择其他运动模式。 */
 #ifndef MOTION_OUTPUT_ENABLE
 #define MOTION_OUTPUT_ENABLE 1
 #endif
 #define IR_CLEAR_SAMPLES 3u
-#define AVOID_FORWARD_MM_S 80L
-#define AVOID_TURN_MRAD_S 600L
+#define LIGHT_DARK_ACTIVE_LEVEL 0u
+#define LIGHT_STATE_CONFIRM_SAMPLES 3u
+#define LIGHT_ADC_VREF_MV 3300u
+#define LIGHT_ADC_MAX_VALUE 4095u
+#define AVOID_FORWARD_MM_S 400L
+#define AVOID_TURN_MRAD_S 900L
 #define AVOID_STOP_SPEED_MM_S 10L
 #define AVOID_STABLE_MS 300u
 #define AVOID_TURN_MIN_MRAD 1571L
@@ -36,11 +40,11 @@
 /* 物理测量轮距保留；正逆解及里程计统一使用有效轮距。 */
 #define PHYSICAL_WHEEL_TRACK_MM 180L
 #define WHEEL_TRACK_MM 152L
-#define MAX_WHEEL_SPEED_MM_S 200L
-#define MAX_LINEAR_SPEED_MM_S 200L
+#define MAX_WHEEL_SPEED_MM_S 400L
+#define MAX_LINEAR_SPEED_MM_S 400L
 #define MAX_ANGULAR_SPEED_MRAD_S 2000L
 #define WHEEL_ACCEL_MM_S2 200L
-#define REVERSE_SAFE_SPEED_MM_S 50L
+#define REVERSE_SAFE_SPEED_MM_S 100L
 #define COMMAND_TIMEOUT_MS 1000u
 
 /* 实验二分段流程：直线->停->原地左转90度->顺时针整圈圆弧->原地左转90度->返回。
@@ -53,16 +57,26 @@
 #define AUTO_STRAIGHT_MM 500L
 #define AUTO_RADIUS_MM 200L
 #define AUTO_ARC_SWEEP_MDEG 360000L
-#define AUTO_ARC_SPEED_MM_S 120L
-#define AUTO_DRIVE_MAX_MM_S 180L
-#define AUTO_DRIVE_MIN_MM_S 15L
+#define AUTO_ARC_SPEED_MM_S 240L
+#define AUTO_DRIVE_MAX_MM_S 360L
+#define AUTO_DRIVE_MIN_MM_S 30L
 #define AUTO_TURN_MAX_MM_S 90L
 #define AUTO_TURN_MIN_MM_S 15L
 #define AUTO_STOP_SPEED_MM_S 10L
 #define AUTO_END_MM 2L
 
+/* 光电压返航：每2秒计算一个AO电压均值，窗口波动受限才接纳。 */
+#define LIGHT_RETURN_TRIGGER_MV 150
+#define LIGHT_RETURN_STABLE_MV 250u
+#define LIGHT_RETURN_STABLE_MS 2000u
+#define LIGHT_RETURN_SPEED_MM_S 240L
+#define LIGHT_RETURN_TURN_MRAD_S 900L
+#define LIGHT_RETURN_MIN_TURN_MRAD_S 200L
+#define LIGHT_RETURN_YAW_TOL_MRAD 30L
+#define LIGHT_RETURN_POSITION_TOL_MM 15L
+
 /* 参数以千分之一表示；积分增益按秒定义，20毫秒步长等于原来的20。 */
-#define PWM_MAX 500
+#define PWM_MAX 1000
 #define PID_KP_MILLI 500
 #define PID_KI_MILLI 1000
 #define PID_KD_MILLI 0

@@ -3,7 +3,7 @@
 #include "bsp_uart.h"
 #include <string.h>
 
-static char tx_buffer[384];
+static char tx_buffer[512];
 static volatile uint16_t tx_length;
 static uint16_t tx_position;
 #define RX_CAPACITY 128u

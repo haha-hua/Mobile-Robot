@@ -26,7 +26,9 @@ static volatile control_snapshot_t status;
 static motion_t motion;
 static odometry_t odom;
 static auto_sequence_t seq;
+static light_return_t light_return;
 static obstacle_t obstacle;
+static light_sensor_t light_sensor;
 static control_mode_t mode;
 static int32_t last_left, last_right;
 static uint8_t elapsed;
@@ -41,8 +43,11 @@ void control_init(void)
     auto_sequence_init(&seq, 0u);
     auto_sequence_cancel(&seq);
     obstacle_init(&obstacle);
+    light_sensor_init(&light_sensor);
     mode = CONTROL_SENSOR;
     odometry_init(&odom);
+    light_return_init(&light_return, &odom, 0u);
+    light_return_cancel(&light_return);
     speed_control_init();
     motor_stop();
     ms_tick = 0u;
@@ -71,6 +76,7 @@ void control_init(void)
 
 static void manual_mode(void)
 {
+    light_return_cancel(&light_return);
     auto_sequence_cancel(&seq);
     obstacle_disable(&obstacle);
     mode = CONTROL_MANUAL;
@@ -113,6 +119,7 @@ uint8_t control_set_wheel_speeds(int32_t left, int32_t right)
 /* 调用者必须处于控制临界区。 */
 static void stop_locked(void)
 {
+    light_return_cancel(&light_return);
     auto_sequence_cancel(&seq);
     obstacle_disable(&obstacle);
     mode = CONTROL_SENSOR;
@@ -136,6 +143,7 @@ static void start_mode(control_mode_t next)
     stop_locked();
     mode = next;
     if (next == CONTROL_AVOID) obstacle_start(&obstacle, &motion, ms_tick);
+    else if (next == CONTROL_LIGHT_RETURN) light_return_init(&light_return, &odom, ms_tick);
     else auto_sequence_init(&seq, ms_tick);
     __set_PRIMASK(primask);
 }
@@ -156,6 +164,16 @@ uint8_t control_start_experiment2(void)
     return 0u;
 #else
     start_mode(CONTROL_EXPERIMENT2);
+    return 1u;
+#endif
+}
+
+uint8_t control_start_light_return(void)
+{
+#if !MOTION_OUTPUT_ENABLE
+    return 0u;
+#else
+    start_mode(CONTROL_LIGHT_RETURN);
     return 1u;
 #endif
 }
@@ -199,6 +217,8 @@ uint8_t control_command(const char *line)
     (void)first; (void)second; (void)velocity;
     return 0u;
 #else
+    if (strncmp(text, "light_return", 12) == 0 && *skip_space(text + 12) == '\0')
+        return control_start_light_return();
     if (strncmp(text, "avoid", 5) == 0 && *skip_space(text + 5) == '\0')
         return control_start_avoid();
     if (strncmp(text, "experiment2", 11) == 0 && *skip_space(text + 11) == '\0')
@@ -238,7 +258,12 @@ void TIM2_IRQHandler(void)
             sample.speed_left = delta_left * (int32_t)(1000u / SPEED_SAMPLE_MS);
             sample.speed_right = delta_right * (int32_t)(1000u / SPEED_SAMPLE_MS);
             obstacle_sample(&obstacle);
-            if (mode == CONTROL_EXPERIMENT2)
+            light_sensor_sample(&light_sensor);
+            odometry_update(&odom, delta_left, delta_right, SPEED_SAMPLE_MS);
+            if (mode == CONTROL_LIGHT_RETURN)
+                light_return_step(&light_return, &motion, &odom, ms_tick,
+                                  light_sensor.millivolts, sample.speed_left, sample.speed_right);
+            else if (mode == CONTROL_EXPERIMENT2)
                 auto_sequence_step(&seq, &motion, ms_tick, delta_left, delta_right,
                                    sample.speed_left, sample.speed_right);
             else if (mode == CONTROL_AVOID)
@@ -257,12 +282,15 @@ void TIM2_IRQHandler(void)
                 motor_stop();
 #endif
             } else motor_stop();
-            odometry_update(&odom, delta_left, delta_right, SPEED_SAMPLE_MS);
             sample.tick = ms_tick;
             sample.state = motion.state;
             sample.mode = mode;
             sample.ir_raw = obstacle.raw_level;
             sample.ir_blocked = obstacle.blocked;
+            sample.light_adc = light_sensor.adc_raw;
+            sample.light_mv = light_sensor.millivolts;
+            sample.light_do = light_sensor.do_raw;
+            sample.light_dark = light_sensor.dark;
             sample.avoid_stage = obstacle.stage;
             sample.avoid_run_mm =
                 (int32_t)(obstacle.total_mm +
@@ -273,6 +301,7 @@ void TIM2_IRQHandler(void)
             sample.pwm_right = pwm_right;
             sample.odom = odom;
             sample.seq = seq;
+            sample.light_return = light_return;
             status = sample;
         }
     }
