@@ -6,6 +6,7 @@
 #include "obstacle.h"
 #include "light_sensor.h"
 #include "light_return.h"
+#include "color_sensor.h"
 typedef enum { CONTROL_SENSOR, CONTROL_MANUAL, CONTROL_AVOID, CONTROL_EXPERIMENT2,
                CONTROL_LIGHT_RETURN } control_mode_t;
 typedef struct {
@@ -15,6 +16,7 @@ typedef struct {
     uint8_t ir_raw, ir_blocked;
     uint16_t light_adc, light_mv;
     uint8_t light_do, light_dark;
+    color_sensor_t color;
     avoid_stage_t avoid_stage;
     int32_t avoid_run_mm; /* avoid任务平均轮程累计，mm。 */
     int32_t speed_left, speed_right; /* ticks/s, PI feedback */
@@ -32,6 +34,8 @@ void control_stop(void);
 uint8_t control_start_avoid(void);
 uint8_t control_start_experiment2(void);
 uint8_t control_start_light_return(void);
+uint8_t control_color_calibrate_white(void);
+void control_color_reset_calibration(void);
 /* 主循环解析完整行；成功返回1，非法命令返回0。 */
 uint8_t control_command(const char *line);
 uint32_t control_tick(void);

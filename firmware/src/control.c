@@ -29,6 +29,7 @@ static auto_sequence_t seq;
 static light_return_t light_return;
 static obstacle_t obstacle;
 static light_sensor_t light_sensor;
+static color_sensor_t color_sensor;
 static control_mode_t mode;
 static int32_t last_left, last_right;
 static uint8_t elapsed;
@@ -44,6 +45,7 @@ void control_init(void)
     auto_sequence_cancel(&seq);
     obstacle_init(&obstacle);
     light_sensor_init(&light_sensor);
+    color_sensor_init(&color_sensor);
     mode = CONTROL_SENSOR;
     odometry_init(&odom);
     light_return_init(&light_return, &odom, 0u);
@@ -178,6 +180,24 @@ uint8_t control_start_light_return(void)
 #endif
 }
 
+uint8_t control_color_calibrate_white(void)
+{
+    uint8_t accepted;
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    accepted = color_sensor_calibrate_white(&color_sensor);
+    __set_PRIMASK(primask);
+    return accepted;
+}
+
+void control_color_reset_calibration(void)
+{
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    color_sensor_reset_calibration(&color_sensor);
+    __set_PRIMASK(primask);
+}
+
 static const char *skip_space(const char *text)
 {
     while (*text == ' ' || *text == '\t') text++;
@@ -210,6 +230,14 @@ uint8_t control_command(const char *line)
     if ((strncmp(text, "stop", 4) == 0 && *skip_space(text + 4) == '\0') ||
         (strncmp(text, "sensor", 6) == 0 && *skip_space(text + 6) == '\0')) {
         control_stop();
+        return 1u;
+    }
+    if (strncmp(text, "color_calibrate", 15) == 0 &&
+        *skip_space(text + 15) == '\0')
+        return control_color_calibrate_white();
+    if (strncmp(text, "color_reset", 11) == 0 &&
+        *skip_space(text + 11) == '\0') {
+        control_color_reset_calibration();
         return 1u;
     }
 #if !MOTION_OUTPUT_ENABLE
@@ -259,6 +287,7 @@ void TIM2_IRQHandler(void)
             sample.speed_right = delta_right * (int32_t)(1000u / SPEED_SAMPLE_MS);
             obstacle_sample(&obstacle);
             light_sensor_sample(&light_sensor);
+            color_sensor_step(&color_sensor, light_sensor.adc_raw);
             odometry_update(&odom, delta_left, delta_right, SPEED_SAMPLE_MS);
             if (mode == CONTROL_LIGHT_RETURN)
                 light_return_step(&light_return, &motion, &odom, ms_tick,
@@ -291,6 +320,7 @@ void TIM2_IRQHandler(void)
             sample.light_mv = light_sensor.millivolts;
             sample.light_do = light_sensor.do_raw;
             sample.light_dark = light_sensor.dark;
+            sample.color = color_sensor;
             sample.avoid_stage = obstacle.stage;
             sample.avoid_run_mm =
                 (int32_t)(obstacle.total_mm +

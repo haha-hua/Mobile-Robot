@@ -20,13 +20,32 @@
 /* 静态测试开关：置0禁用电机输出并拒绝运动命令，仅采样传感器；
  * 置1启用自动光电压触发返航，也可通过串口选择其他运动模式。 */
 #ifndef MOTION_OUTPUT_ENABLE
-#define MOTION_OUTPUT_ENABLE 1
+#define MOTION_OUTPUT_ENABLE 0
 #endif
 #define IR_CLEAR_SAMPLES 3u
 #define LIGHT_DARK_ACTIVE_LEVEL 0u
 #define LIGHT_STATE_CONFIRM_SAMPLES 3u
 #define LIGHT_ADC_VREF_MV 3300u
 #define LIGHT_ADC_MAX_VALUE 4095u
+#define COLOR_SETTLE_SAMPLES 2u
+#define COLOR_MEASURE_SAMPLES 6u
+/* 当前光敏模块实测为光增强时AO下降；若换成相反输出的模块改为0。 */
+#define COLOR_ADC_INVERTED 1u
+#define COLOR_MIN_SIGNAL 60u
+#define COLOR_DOMINANCE_MILLI 1200u
+#define COLOR_STABLE_FRAMES 3u
+/* 初始分类边界取自当前红、绿、黄色板实测的归一化信号(千分比)。 */
+#define COLOR_RED_MIN_R 400u
+#define COLOR_RED_MAX_G 380u
+#define COLOR_GREEN_MIN_G 590u
+#define COLOR_GREEN_MAX_B 190u
+#define COLOR_YELLOW_MIN_G 500u
+#define COLOR_YELLOW_MAX_G 589u
+#define COLOR_YELLOW_MIN_B 190u
+#define COLOR_BLUE_MIN_R 330u
+#define COLOR_BLUE_MIN_G 380u
+#define COLOR_BLUE_MAX_G 450u
+#define COLOR_BLUE_MAX_B 280u
 #define AVOID_FORWARD_MM_S 400L
 #define AVOID_TURN_MRAD_S 900L
 #define AVOID_STOP_SPEED_MM_S 10L
