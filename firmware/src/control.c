@@ -2,6 +2,7 @@
 #include "config.h"
 #include "encoder.h"
 #include "motor.h"
+#include "rgb_led.h"
 #include "speed_control.h"
 #include "stm32f10x.h"
 #include <string.h>
@@ -27,6 +28,7 @@ static motion_t motion;
 static odometry_t odom;
 static auto_sequence_t seq;
 static light_return_t light_return;
+static color_mission_t mission;
 static obstacle_t obstacle;
 static light_sensor_t light_sensor;
 static color_sensor_t color_sensor;
@@ -50,6 +52,8 @@ void control_init(void)
     odometry_init(&odom);
     light_return_init(&light_return, &odom, 0u);
     light_return_cancel(&light_return);
+    color_mission_init(&mission, &odom, 0u);
+    color_mission_cancel(&mission);
     speed_control_init();
     motor_stop();
     ms_tick = 0u;
@@ -57,7 +61,9 @@ void control_init(void)
     status = (control_snapshot_t){0};
     status.ir_raw = obstacle.raw_level;
     status.ir_blocked = obstacle.blocked;
+    status.ir = obstacle;
     status.seq = seq;
+    status.mission = mission;
     last_left = encoder_left_count();
     last_right = encoder_right_count();
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
@@ -76,13 +82,16 @@ void control_init(void)
     __set_PRIMASK(primask);
 }
 
+#if MOTION_OUTPUT_ENABLE
 static void manual_mode(void)
 {
+    color_mission_cancel(&mission);
     light_return_cancel(&light_return);
     auto_sequence_cancel(&seq);
     obstacle_disable(&obstacle);
     mode = CONTROL_MANUAL;
 }
+#endif
 
 uint8_t control_set_velocity(int32_t v, int32_t w)
 {
@@ -121,6 +130,7 @@ uint8_t control_set_wheel_speeds(int32_t left, int32_t right)
 /* 调用者必须处于控制临界区。 */
 static void stop_locked(void)
 {
+    color_mission_cancel(&mission);
     light_return_cancel(&light_return);
     auto_sequence_cancel(&seq);
     obstacle_disable(&obstacle);
@@ -138,6 +148,7 @@ void control_stop(void)
     __set_PRIMASK(primask);
 }
 
+#if MOTION_OUTPUT_ENABLE
 static void start_mode(control_mode_t next)
 {
     uint32_t primask = __get_PRIMASK();
@@ -146,9 +157,13 @@ static void start_mode(control_mode_t next)
     mode = next;
     if (next == CONTROL_AVOID) obstacle_start(&obstacle, &motion, ms_tick);
     else if (next == CONTROL_LIGHT_RETURN) light_return_init(&light_return, &odom, ms_tick);
-    else auto_sequence_init(&seq, ms_tick);
+    else if (next == CONTROL_MISSION) {
+        odometry_init(&odom);
+        color_mission_init(&mission, &odom, ms_tick);
+    } else auto_sequence_init(&seq, ms_tick);
     __set_PRIMASK(primask);
 }
+#endif
 
 uint8_t control_start_avoid(void)
 {
@@ -180,14 +195,36 @@ uint8_t control_start_light_return(void)
 #endif
 }
 
-uint8_t control_color_calibrate_white(void)
+uint8_t control_start_mission(void)
+{
+#if !MOTION_OUTPUT_ENABLE
+    return 0u;
+#else
+    start_mode(CONTROL_MISSION);
+    return 1u;
+#endif
+}
+
+uint8_t control_color_calibrate(color_label_t target)
 {
     uint8_t accepted;
+    color_sensor_t snapshot_copy;
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
-    accepted = color_sensor_calibrate_white(&color_sensor);
+    accepted = color_sensor_calibrate_color(&color_sensor, target);
+    if (accepted) {
+        snapshot_copy = color_sensor;
+        status.color = color_sensor;
+    }
     __set_PRIMASK(primask);
+    if (accepted)
+        (void)color_sensor_save_calibration(&snapshot_copy);
     return accepted;
+}
+
+uint8_t control_color_calibrate_white(void)
+{
+    return control_color_calibrate(COLOR_WHITE);
 }
 
 void control_color_reset_calibration(void)
@@ -195,6 +232,17 @@ void control_color_reset_calibration(void)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
     color_sensor_reset_calibration(&color_sensor);
+    status.color = color_sensor;
+    __set_PRIMASK(primask);
+    color_sensor_erase_calibration();
+}
+
+void control_ir_reset_diag(void)
+{
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    obstacle_reset_diag(&obstacle);
+    status.ir = obstacle;
     __set_PRIMASK(primask);
 }
 
@@ -204,6 +252,7 @@ static const char *skip_space(const char *text)
     return text;
 }
 
+#if MOTION_OUTPUT_ENABLE
 static uint8_t parse_number(const char **text, int32_t *value)
 {
     const char *p = skip_space(*text);
@@ -221,6 +270,7 @@ static uint8_t parse_number(const char **text, int32_t *value)
     *text = p;
     return 1u;
 }
+#endif
 
 uint8_t control_command(const char *line)
 {
@@ -232,6 +282,11 @@ uint8_t control_command(const char *line)
         control_stop();
         return 1u;
     }
+    if ((strncmp(text, "reset", 5) == 0 && *skip_space(text + 5) == '\0') ||
+        (strncmp(text, "ir_reset", 8) == 0 && *skip_space(text + 8) == '\0')) {
+        control_ir_reset_diag();
+        return 1u;
+    }
     if (strncmp(text, "color_calibrate", 15) == 0 &&
         *skip_space(text + 15) == '\0')
         return control_color_calibrate_white();
@@ -240,11 +295,30 @@ uint8_t control_command(const char *line)
         control_color_reset_calibration();
         return 1u;
     }
+    if ((strncmp(text, "cal", 3) == 0 && (text[3] == ' ' || text[3] == '\t')) ||
+        (strncmp(text, "color_cal", 9) == 0 && (text[9] == ' ' || text[9] == '\t'))) {
+        const char *arg = skip_space(text + (text[1] == 'a' ? 3 : 9));
+        if (strncmp(arg, "white", 5) == 0 && *skip_space(arg + 5) == '\0')
+            return control_color_calibrate(COLOR_WHITE);
+        if (strncmp(arg, "yellow", 6) == 0 && *skip_space(arg + 6) == '\0')
+            return control_color_calibrate(COLOR_YELLOW);
+        if (strncmp(arg, "red", 3) == 0 && *skip_space(arg + 3) == '\0')
+            return control_color_calibrate(COLOR_RED);
+        if (strncmp(arg, "blue", 4) == 0 && *skip_space(arg + 4) == '\0')
+            return control_color_calibrate(COLOR_BLUE);
+        if (strncmp(arg, "reset", 5) == 0 && *skip_space(arg + 5) == '\0') {
+            control_color_reset_calibration();
+            return 1u;
+        }
+        return 0u;
+    }
 #if !MOTION_OUTPUT_ENABLE
     /* 静态测试：运动类命令一律拒绝，防止误触发。 */
     (void)first; (void)second; (void)velocity;
     return 0u;
 #else
+    if (strncmp(text, "mission", 7) == 0 && *skip_space(text + 7) == '\0')
+        return control_start_mission();
     if (strncmp(text, "light_return", 12) == 0 && *skip_space(text + 12) == '\0')
         return control_start_light_return();
     if (strncmp(text, "avoid", 5) == 0 && *skip_space(text + 5) == '\0')
@@ -269,6 +343,7 @@ void TIM2_IRQHandler(void)
     if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
         TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
         ms_tick++;
+        obstacle_fast_sample_1ms(&obstacle);
         if (++elapsed >= SPEED_SAMPLE_MS) {
             int32_t left, right, delta_left, delta_right;
             int16_t pwm_left, pwm_right;
@@ -287,9 +362,22 @@ void TIM2_IRQHandler(void)
             sample.speed_right = delta_right * (int32_t)(1000u / SPEED_SAMPLE_MS);
             obstacle_sample(&obstacle);
             light_sensor_sample(&light_sensor);
+#if IR_DIAG_ENABLE
+            if (obstacle.floating)
+                rgb_led_set(((ms_tick / 200u) & 1u) ? RGB_LED_BLUE : RGB_LED_OFF);
+            else if (obstacle.raw_level == IR_ACTIVE_LEVEL)
+                rgb_led_set(RGB_LED_RED);
+            else
+                rgb_led_set(RGB_LED_GREEN);
+#else
             color_sensor_step(&color_sensor, light_sensor.adc_raw);
+#endif
             odometry_update(&odom, delta_left, delta_right, SPEED_SAMPLE_MS);
-            if (mode == CONTROL_LIGHT_RETURN)
+            if (mode == CONTROL_MISSION)
+                color_mission_step(&mission, &motion, &odom, &obstacle, &color_sensor,
+                                   ms_tick, delta_left, delta_right,
+                                   sample.speed_left, sample.speed_right);
+            else if (mode == CONTROL_LIGHT_RETURN)
                 light_return_step(&light_return, &motion, &odom, ms_tick,
                                   light_sensor.millivolts, sample.speed_left, sample.speed_right);
             else if (mode == CONTROL_EXPERIMENT2)
@@ -316,6 +404,7 @@ void TIM2_IRQHandler(void)
             sample.mode = mode;
             sample.ir_raw = obstacle.raw_level;
             sample.ir_blocked = obstacle.blocked;
+            sample.ir = obstacle;
             sample.light_adc = light_sensor.adc_raw;
             sample.light_mv = light_sensor.millivolts;
             sample.light_do = light_sensor.do_raw;
@@ -332,6 +421,7 @@ void TIM2_IRQHandler(void)
             sample.odom = odom;
             sample.seq = seq;
             sample.light_return = light_return;
+            sample.mission = mission;
             status = sample;
         }
     }

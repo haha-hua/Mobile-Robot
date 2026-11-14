@@ -12,8 +12,8 @@ void light_sensor_init(light_sensor_t *sensor)
     GPIO_InitTypeDef gpio;
     ADC_InitTypeDef adc;
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD | RCC_APB2Periph_ADC1,
-                           ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOD |
+                           RCC_APB2Periph_ADC1, ENABLE);
     RCC_ADCCLKConfig(RCC_PCLK2_Div6);
     gpio.GPIO_Pin = LIGHT_AO_PIN;
     gpio.GPIO_Mode = GPIO_Mode_AIN;
@@ -47,11 +47,16 @@ void light_sensor_init(light_sensor_t *sensor)
 
 void light_sensor_sample(light_sensor_t *sensor)
 {
-    uint8_t raw, dark;
-    ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-    while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC)) { }
-    sensor->adc_raw = ADC_GetConversionValue(ADC1);
+    uint32_t adc_sum = 0u;
+    uint8_t i, raw, dark;
+    for (i = 0u; i < LIGHT_ADC_AVG_SAMPLES; i++) {
+        ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+        ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+        while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC)) { }
+        adc_sum += ADC_GetConversionValue(ADC1);
+    }
+    sensor->adc_raw = (uint16_t)((adc_sum + LIGHT_ADC_AVG_SAMPLES / 2u) /
+                                 LIGHT_ADC_AVG_SAMPLES);
     sensor->millivolts = (uint16_t)(((uint32_t)sensor->adc_raw * LIGHT_ADC_VREF_MV +
                                      LIGHT_ADC_MAX_VALUE / 2u) / LIGHT_ADC_MAX_VALUE);
 

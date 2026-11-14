@@ -7,13 +7,15 @@
 #include "light_sensor.h"
 #include "light_return.h"
 #include "color_sensor.h"
+#include "color_mission.h"
 typedef enum { CONTROL_SENSOR, CONTROL_MANUAL, CONTROL_AVOID, CONTROL_EXPERIMENT2,
-               CONTROL_LIGHT_RETURN } control_mode_t;
+               CONTROL_LIGHT_RETURN, CONTROL_MISSION } control_mode_t;
 typedef struct {
     uint32_t tick; /* Timestamp of this complete 20ms control sample. */
     motion_state_t state;
     control_mode_t mode;
     uint8_t ir_raw, ir_blocked;
+    obstacle_t ir;
     uint16_t light_adc, light_mv;
     uint8_t light_do, light_dark;
     color_sensor_t color;
@@ -25,6 +27,7 @@ typedef struct {
     odometry_t odom; /* m, rad, m/s, rad/s */
     auto_sequence_t seq;
     light_return_t light_return;
+    color_mission_t mission;
 } control_snapshot_t;
 void control_init(void);
 /* 单位mm/s和mrad/s；成功返回1，越界返回0且不刷新超时。 */
@@ -34,8 +37,11 @@ void control_stop(void);
 uint8_t control_start_avoid(void);
 uint8_t control_start_experiment2(void);
 uint8_t control_start_light_return(void);
+uint8_t control_start_mission(void);
+uint8_t control_color_calibrate(color_label_t target);
 uint8_t control_color_calibrate_white(void);
 void control_color_reset_calibration(void);
+void control_ir_reset_diag(void);
 /* 主循环解析完整行；成功返回1，非法命令返回0。 */
 uint8_t control_command(const char *line);
 uint32_t control_tick(void);
