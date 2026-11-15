@@ -63,10 +63,15 @@ typedef struct {
     float right_bound_y_m;
     float obs_x_m;
     float obs_y_m;
+    float trigger_x_m;
+    float trigger_y_m;
+    float trigger_yaw;
     float map_obs_x[MISSION_MAX_MAP_OBS];
     float map_obs_y[MISSION_MAX_MAP_OBS];
 
     float seg_mm;
+    float back_mm;
+    float prev_yaw;
     uint8_t has_yellow_start;
     uint8_t has_blue_start;
     uint8_t left_blue;
@@ -81,7 +86,15 @@ typedef struct {
     uint8_t white_retry_count;
     uint8_t obs_count;
     uint8_t map_obs_count;
-    int8_t avoid_side;  /* 避障转向方向：相对于当前车头，+1向左绕，-1向右绕 */
+    uint8_t avoid_settled;
+    uint8_t allow_backoff;
+    uint8_t scan_hold;
+    uint8_t saw_left_ir;
+    uint8_t saw_right_ir;
+    int8_t trigger_rot_dir;
+    int8_t first_ir_side;
+    int8_t scan_dir;    /* 巡航扇形微摆扫掠方向：+1向左摆，-1向右摆 */
+    int8_t avoid_side;  /* 避障转向方向：相对于当前goal_yaw，+1向左绕，-1向右绕 */
     int8_t return_side; /* 白边内切方向：相对于当前goal_yaw，-1向右内切，+1向左内切 */
     int8_t turn_dir;    /* 180度掉头锁定转向方向，防止±pi跳变抖动 */
 } color_mission_t;
